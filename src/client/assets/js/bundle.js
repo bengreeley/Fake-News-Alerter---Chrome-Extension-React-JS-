@@ -65,30 +65,68 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var App = function (_React$Component) {
-	  _inherits(App, _React$Component);
+	var FakeNewsChecker = function (_React$Component) {
+	  _inherits(FakeNewsChecker, _React$Component);
 	
-	  function App() {
-	    _classCallCheck(this, App);
+	  function FakeNewsChecker() {
+	    _classCallCheck(this, FakeNewsChecker);
 	
-	    return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+	    var _this = _possibleConstructorReturn(this, (FakeNewsChecker.__proto__ || Object.getPrototypeOf(FakeNewsChecker)).call(this));
+	
+	    _this.state = { items: [] };
+	    return _this;
 	  }
 	
-	  _createClass(App, [{
+	  _createClass(FakeNewsChecker, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      console.log(this.checkLinks());
+	    }
+	  }, {
+	    key: 'checkLinks',
+	    value: function checkLinks() {
+	
+	      var current_url = 'http://fakenewsalerter.dev/wp-json/urlchecker/v1/checklinks/?urls=http://test.com';
+	
+	      return fetch(current_url, {
+	        type: 'text/jsonp',
+	        method: 'GET',
+	        headers: {
+	          'Accept': 'application/json',
+	          'Content-Type': 'application/json'
+	        }
+	      }).then(function (response) {
+	        return response.json();
+	      }).then(function (responseJson) {
+	        return responseJson.data;
+	      });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      return _react2.default.createElement(
-	        'p',
+	        'div',
 	        null,
-	        ' Hello React!'
+	        _react2.default.createElement(
+	          'div',
+	          null,
+	          'Items:'
+	        ),
+	        this.state.items.map(function (item) {
+	          return _react2.default.createElement(
+	            'div',
+	            null,
+	            'http://'
+	          );
+	        })
 	      );
 	    }
 	  }]);
 	
-	  return App;
+	  return FakeNewsChecker;
 	}(_react2.default.Component);
 	
-	(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('app'));
+	(0, _reactDom.render)(_react2.default.createElement(FakeNewsChecker, null), document.getElementById('app'));
 
 /***/ },
 /* 1 */
