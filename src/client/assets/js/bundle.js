@@ -66,64 +66,108 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	var FakeNewsChecker = function (_React$Component) {
-	  _inherits(FakeNewsChecker, _React$Component);
+	    _inherits(FakeNewsChecker, _React$Component);
 	
-	  function FakeNewsChecker() {
-	    _classCallCheck(this, FakeNewsChecker);
+	    function FakeNewsChecker() {
+	        _classCallCheck(this, FakeNewsChecker);
 	
-	    var _this = _possibleConstructorReturn(this, (FakeNewsChecker.__proto__ || Object.getPrototypeOf(FakeNewsChecker)).call(this));
+	        var _this = _possibleConstructorReturn(this, (FakeNewsChecker.__proto__ || Object.getPrototypeOf(FakeNewsChecker)).call(this));
 	
-	    _this.state = { items: [] };
-	    return _this;
-	  }
-	
-	  _createClass(FakeNewsChecker, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      console.log(this.checkLinks());
+	        _this.state = {
+	            foundURLs: []
+	        };
+	        return _this;
 	    }
-	  }, {
-	    key: 'checkLinks',
-	    value: function checkLinks() {
 	
-	      var current_url = 'http://fakenewsalerter.dev/wp-json/urlchecker/v1/checklinks/?urls=http://test.com';
-	
-	      return fetch(current_url, {
-	        type: 'text/jsonp',
-	        method: 'GET',
-	        headers: {
-	          'Accept': 'application/json',
-	          'Content-Type': 'application/json'
+	    _createClass(FakeNewsChecker, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.checkLinks();
 	        }
-	      }).then(function (response) {
-	        return response.json();
-	      }).then(function (responseJson) {
-	        return responseJson.data;
-	      });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	          'div',
-	          null,
-	          'Items:'
-	        ),
-	        this.state.items.map(function (item) {
-	          return _react2.default.createElement(
-	            'div',
-	            null,
-	            'http://'
-	          );
-	        })
-	      );
-	    }
-	  }]);
+	    }, {
+	        key: 'checkLinks',
+	        value: function checkLinks() {
+	            var _this2 = this;
 	
-	  return FakeNewsChecker;
+	            var urls = [];
+	
+	            // Add the current page to the URLs array
+	            urls.push(window.location.href);
+	
+	            //TODO: Add rest of URLs on page
+	
+	            var current_url = 'http://fakenewsalerter.dev/wp-json/urlchecker/v1/checklinks/?urls=${urls}';
+	
+	            return fetch(current_url, {
+	                type: 'text/jsonp',
+	                method: 'GET',
+	                headers: {
+	                    'Accept': 'application/json',
+	                    'Content-Type': 'application/json'
+	                }
+	            }).then(function (response) {
+	                return response.json();
+	            }).then(function (responseJson) {
+	
+	                // Set the state with the data
+	                return _this2.setState({
+	                    foundURLs: responseJson.data
+	                });
+	            });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	
+	            var foundURLCount = 0;
+	
+	            if (this.state.foundURLs) {
+	                foundURLCount = this.state.foundURLs.length;
+	            }
+	
+	            this.updateFoundCount(foundURLCount);
+	
+	            if (foundURLCount > 0) {
+	
+	                return _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        'Items:'
+	                    ),
+	                    _react2.default.createElement(
+	                        'ul',
+	                        null,
+	                        this.state.foundURLs.map(function (foundLink) {
+	                            return _react2.default.createElement(
+	                                'li',
+	                                null,
+	                                foundLink
+	                            );
+	                        })
+	                    )
+	                );
+	            }
+	
+	            return _react2.default.createElement('div', null);
+	        }
+	    }, {
+	        key: 'updateFoundCount',
+	        value: function updateFoundCount(updateCount) {
+	
+	            var updateValue = 'No';
+	
+	            if (parseInt(updateCount) > 0) {
+	                updateValue = parseInt(updateCount);
+	            }
+	
+	            document.getElementById('fake-news-count').textContent = updateValue;
+	        }
+	    }]);
+	
+	    return FakeNewsChecker;
 	}(_react2.default.Component);
 	
 	(0, _reactDom.render)(_react2.default.createElement(FakeNewsChecker, null), document.getElementById('app'));
