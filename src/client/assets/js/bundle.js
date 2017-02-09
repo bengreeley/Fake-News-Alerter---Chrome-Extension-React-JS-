@@ -82,38 +82,43 @@
 	    _createClass(FakeNewsChecker, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            this.checkLinks();
+	            this.chromeTabToggle();
 	        }
 	    }, {
-	        key: 'checkLinks',
-	        value: function checkLinks() {
-	            var _this2 = this;
+	        key: 'onExecuted',
+	        value: function onExecuted(result) {
+	            alert(result);
+	        }
+	    }, {
+	        key: 'chromeTabToggle',
+	        value: function chromeTabToggle() {
 	
-	            var urls = [];
+	            chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+	                var _this2 = this;
 	
-	            // Add the current page to the URLs array
-	            urls.push(window.location.href);
+	                var urls = [];
 	
-	            //TODO: Add rest of URLs on page
+	                urls.push(tabs[0].url);
 	
-	            var current_url = 'http://fakenewsalerter.dev/wp-json/urlchecker/v1/checklinks/?urls=${urls}';
+	                var current_url = "http://fakenewsalerter.dev/wp-json/urlchecker/v1/checklinks/?urls=" + urls.join();
 	
-	            return fetch(current_url, {
-	                type: 'text/jsonp',
-	                method: 'GET',
-	                headers: {
-	                    'Accept': 'application/json',
-	                    'Content-Type': 'application/json'
-	                }
-	            }).then(function (response) {
-	                return response.json();
-	            }).then(function (responseJson) {
+	                return fetch(current_url, {
+	                    type: 'text/jsonp',
+	                    method: 'GET',
+	                    headers: {
+	                        'Accept': 'application/json',
+	                        'Content-Type': 'application/json'
+	                    }
+	                }).then(function (response) {
+	                    return response.json();
+	                }).then(function (responseJson) {
 	
-	                // Set the state with the data
-	                return _this2.setState({
-	                    foundURLs: responseJson.data
+	                    // Set the state with the data
+	                    return _this2.setState({
+	                        foundURLs: responseJson.data
+	                    });
 	                });
-	            });
+	            }.bind(this));
 	        }
 	    }, {
 	        key: 'render',
@@ -132,11 +137,6 @@
 	                return _react2.default.createElement(
 	                    'div',
 	                    null,
-	                    _react2.default.createElement(
-	                        'div',
-	                        null,
-	                        'Items:'
-	                    ),
 	                    _react2.default.createElement(
 	                        'ul',
 	                        null,

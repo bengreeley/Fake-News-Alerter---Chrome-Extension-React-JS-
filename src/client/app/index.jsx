@@ -11,36 +11,41 @@ class FakeNewsChecker extends React.Component {
     }
 
     componentDidMount() {
-        this.checkLinks();
+        this.chromeTabToggle();
     }
 
-    checkLinks() {
+    onExecuted( result ) {
+        alert( result );
+    }
 
-        let urls = [];
+    chromeTabToggle() {
 
-        // Add the current page to the URLs array
-        urls.push( window.location.href );
+        chrome.tabs.query( { currentWindow: true, active: true }, function( tabs ) {
 
-        //TODO: Add rest of URLs on page
+            let urls = [];
 
-        let current_url = 'http://fakenewsalerter.dev/wp-json/urlchecker/v1/checklinks/?urls=${urls}';
+            urls.push( tabs[0].url );
 
-        return ( fetch( current_url, {
-              type: 'text/jsonp',
-              method: 'GET',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-              }
+            let current_url = "http://fakenewsalerter.dev/wp-json/urlchecker/v1/checklinks/?urls=" + urls.join();
+
+            return ( fetch( current_url, {
+                type: 'text/jsonp',
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
             } )
-            .then( ( response ) => response.json() )
-            .then( ( responseJson ) => {
+                .then( ( response ) => response.json() )
+                .then( ( responseJson ) => {
 
-                // Set the state with the data
-                return this.setState({
-                    foundURLs: responseJson.data
-                } );
-            } ) );
+                    // Set the state with the data
+                    return this.setState( {
+                        foundURLs: responseJson.data
+                    } );
+                } ) );
+
+        }.bind( this ) );
 
     }
 
@@ -58,15 +63,13 @@ class FakeNewsChecker extends React.Component {
 
             return (
                 <div>
-                    <div>Items:</div>
                     <ul>
-                        {this.state.foundURLs.map(function (foundLink) {
+                        { this.state.foundURLs.map(function (foundLink) {
                             return (
                                 <li>{foundLink}</li>
                             )
-                        })
-
-                        }</ul>
+                        } ) }
+                    </ul>
                 </div>
             );
 
